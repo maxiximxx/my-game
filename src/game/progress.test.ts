@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { createProgress, isAllCleared, isLevelUnlocked, recordClear } from './progress';
+import {
+  createProgress,
+  getBestTimeMs,
+  isAllCleared,
+  isLevelUnlocked,
+  recordBestTime,
+  recordClear,
+} from './progress';
 
 const LEVEL_COUNT = 5;
 
@@ -55,5 +62,37 @@ describe('全部通关', () => {
     expect(isAllCleared(progress, LEVEL_COUNT)).toBe(true);
     expect(isAllCleared(recordClear(progress, 3, LEVEL_COUNT), LEVEL_COUNT)).toBe(true);
     expect(isLevelUnlocked(progress, 3)).toBe(true);
+  });
+});
+
+describe('最佳用时', () => {
+  it('未通关的关卡没有最佳用时', () => {
+    expect(getBestTimeMs(createProgress(), 1)).toBeNull();
+  });
+
+  it('首次通关后，最佳用时等于本次通关用时', () => {
+    const progress = recordBestTime(createProgress(), 1, 42000);
+
+    expect(getBestTimeMs(progress, 1)).toBe(42000);
+  });
+
+  it('再次通关用时更短时，最佳用时更新', () => {
+    let progress = recordBestTime(createProgress(), 1, 42000);
+    progress = recordBestTime(progress, 1, 30000);
+
+    expect(getBestTimeMs(progress, 1)).toBe(30000);
+  });
+
+  it('再次通关用时更长时，保留原来的最佳用时', () => {
+    let progress = recordBestTime(createProgress(), 1, 42000);
+    progress = recordBestTime(progress, 1, 50000);
+
+    expect(getBestTimeMs(progress, 1)).toBe(42000);
+  });
+
+  it('各关的最佳用时互不影响', () => {
+    const progress = recordBestTime(createProgress(), 1, 42000);
+
+    expect(getBestTimeMs(progress, 2)).toBeNull();
   });
 });

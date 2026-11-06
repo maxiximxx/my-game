@@ -12,7 +12,7 @@ interface GamePageProps {
   nextLevel: Level | null;
   onOpenLevel: (level: Level) => void;
   onBackToLevelSelect: () => void;
-  onLevelCleared: (levelId: number) => void;
+  onLevelCleared: (levelId: number, clearTimeMs: number) => void;
 }
 
 export function GamePage({
@@ -26,12 +26,13 @@ export function GamePage({
   const activeHintId = state.activeHint?.regionId;
   const hintRegion = level.differences.find((difference) => difference.id === activeHintId) ?? null;
 
-  // 通关时把结果同步到进度存储（外部状态）。
+  // 通关时把结果同步到进度存储（外部状态）。clearTimeMs 从 null 变为数值时只触发一次。
+  const clearTimeMs = state.clearTimeMs;
   useEffect(() => {
-    if (state.status === 'cleared') {
-      onLevelCleared(level.id);
+    if (clearTimeMs !== null) {
+      onLevelCleared(level.id, clearTimeMs);
     }
-  }, [state.status, level.id, onLevelCleared]);
+  }, [clearTimeMs, level.id, onLevelCleared]);
 
   return (
     <main>

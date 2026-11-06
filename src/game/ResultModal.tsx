@@ -1,3 +1,4 @@
+import { formatSeconds } from './format';
 import { Modal } from './Modal';
 
 interface ResultModalProps {
@@ -16,7 +17,7 @@ export function ResultModal({
 }: ResultModalProps) {
   return (
     <Modal title="通关">
-      <p>通关用时 {(clearTimeMs / 1000).toFixed(1)} 秒</p>
+      <p>通关用时 {formatSeconds(clearTimeMs)} 秒</p>
       <button type="button" onClick={onReplay}>
         重玩
       </button>
