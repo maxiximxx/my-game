@@ -7,13 +7,22 @@ interface LevelSelectPageProps {
   levels: readonly Level[];
   progress: Progress;
   onSelectLevel: (level: Level) => void;
+  onResetProgress: () => void;
 }
 
-export function LevelSelectPage({ levels, progress, onSelectLevel }: LevelSelectPageProps) {
+export function LevelSelectPage({
+  levels,
+  progress,
+  onSelectLevel,
+  onResetProgress,
+}: LevelSelectPageProps) {
   return (
     <main>
       <h1>选关</h1>
       {isAllCleared(progress, levels.length) && <p>全部通关</p>}
+      <button type="button" onClick={onResetProgress}>
+        清除进度
+      </button>
       <ul className="level-list">
         {levels.map((level) => {
           const unlocked = isLevelUnlocked(progress, level.id);
