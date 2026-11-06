@@ -56,7 +56,8 @@ function BoardImage({ src, alt, markedRegions, onPick }: BoardImageProps) {
           style={{
             left: `${region.center.x * 100}%`,
             top: `${region.center.y * 100}%`,
-            width: `${region.radius * 200}%`,
+            // 直径为半径的两倍，图片宽度按 100% 计算。
+            width: `${region.radius * 2 * 100}%`,
           }}
         />
       ))}
