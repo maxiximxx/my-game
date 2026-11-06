@@ -23,7 +23,12 @@ export function GamePage({ level, onBackToLevelSelect }: GamePageProps) {
         remainingSeconds={Math.ceil(getRemainingMs(state) / 1000)}
         onBackToLevelSelect={onBackToLevelSelect}
       />
-      <GameBoard level={level} foundIds={state.foundIds} onPick={pick} />
+      <GameBoard
+        level={level}
+        foundIds={state.foundIds}
+        missMarks={state.missMarks}
+        onPick={pick}
+      />
       {state.clearTimeMs !== null && (
         <ResultModal
           clearTimeMs={state.clearTimeMs}

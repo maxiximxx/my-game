@@ -50,3 +50,32 @@
   background: #ffffff;
   text-align: center;
 }
+
+.miss-mark {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.miss-mark::before,
+.miss-mark::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+  background: #e63946;
+}
+
+.miss-mark::before {
+  transform: rotate(45deg);
+}
+
+.miss-mark::after {
+  transform: rotate(-45deg);
+}

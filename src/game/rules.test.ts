@@ -21,11 +21,11 @@ describe('核心规则：命中与非命中', () => {
     expect(state.status).toBe('playing');
   });
 
-  it('点中圆形区域外的位置时，状态保持不变', () => {
-    const initial = startLevel(fixtureLevel);
-    const state = clickPoint(initial, { x: 0.5, y: 0.1 });
+  it('点中圆形区域外的位置时，不记为找到，仍在进行中', () => {
+    const state = clickPoint(startLevel(fixtureLevel), { x: 0.5, y: 0.1 });
 
-    expect(state).toEqual(initial);
+    expect(state.foundIds).toEqual([]);
+    expect(state.status).toBe('playing');
   });
 
   it('重复点击已找到的差异点时，已找到数量不增加', () => {
@@ -134,5 +134,47 @@ describe('核心规则：限时与超时', () => {
     expect(state.status).toBe('playing');
     expect(state.foundIds).toEqual([]);
     expect(getRemainingMs(state)).toBe(60000);
+  });
+});
+
+describe('核心规则：误点与重复点击', () => {
+  it('误点后剩余时间减少 5 秒，本关不会立即失败，已找到的差异点不变', () => {
+    const state = clickPoint(startLevel(fixtureLevel), { x: 0.5, y: 0.1 });
+
+    expect(getRemainingMs(state)).toBe(55000);
+    expect(state.status).toBe('playing');
+    expect(state.foundIds).toEqual([]);
+  });
+
+  it('误点位置显示红色叉号，约 600 毫秒后自动消失', () => {
+    let state = clickPoint(startLevel(fixtureLevel), { x: 0.5, y: 0.1 });
+    expect(state.missMarks.map((mark) => mark.point)).toEqual([{ x: 0.5, y: 0.1 }]);
+
+    state = advanceTime(state, 599);
+    expect(state.missMarks).toHaveLength(1);
+
+    state = advanceTime(state, 1);
+    expect(state.missMarks).toEqual([]);
+  });
+
+  it('剩余时间不足 5 秒时误点会归零并判定超时', () => {
+    const state = clickPoint(advanceTime(startLevel(fixtureLevel), 57000), { x: 0.5, y: 0.1 });
+
+    expect(getRemainingMs(state)).toBe(0);
+    expect(state.status).toBe('timeUp');
+  });
+
+  it('误点后剩余时间恰好为 0 时判定超时', () => {
+    const state = clickPoint(advanceTime(startLevel(fixtureLevel), 55000), { x: 0.5, y: 0.1 });
+
+    expect(state.status).toBe('timeUp');
+  });
+
+  it('重复点击已找到的差异点没有任何效果，不扣时间，也不计为误点', () => {
+    const once = clickPoint(startLevel(fixtureLevel), { x: 0.25, y: 0.5 });
+    const twice = clickPoint(once, { x: 0.25, y: 0.5 });
+
+    expect(twice).toEqual(once);
+    expect(getRemainingMs(twice)).toBe(60000);
   });
 });

@@ -3,6 +3,15 @@ import type { DifferenceRegion, GameState, Level, Point } from './types';
 /** 关卡图片的宽高比（宽 : 高）。所有关卡图片统一为 4:3。 */
 const IMAGE_ASPECT_RATIO = 4 / 3;
 
+/** 每关的限时（毫秒）。计时不可暂停。 */
+const TIME_LIMIT_MS = 60_000;
+
+/** 误点扣减的时间（毫秒）。 */
+const MISS_PENALTY_MS = 5_000;
+
+/** 误点叉号显示的时长（毫秒）。 */
+const MISS_MARK_DURATION_MS = 600;
+
 /**
  * 判断点是否落在差异点的圆形区域内（含边界）。
  * 相对坐标在纵向和横向上的物理长度不同，纵向差值需要先除以宽高比，
@@ -14,37 +23,18 @@ function isInsideRegion(point: Point, region: DifferenceRegion): boolean {
   return dx * dx + dy * dy <= region.radius * region.radius;
 }
 
-/** 每关的限时（毫秒）。计时不可暂停。 */
-const TIME_LIMIT_MS = 60_000;
-
-export function getRemainingMs(state: GameState): number {
-  return Math.max(0, TIME_LIMIT_MS - state.elapsedMs);
-}
-
-export function startLevel(level: Level): GameState {
-  return {
-    level,
-    status: 'playing',
-    foundIds: [],
-    elapsedMs: 0,
-    clearTimeMs: null,
-  };
-}
-
-export function clickPoint(state: GameState, point: Point): GameState {
-  if (state.status !== 'playing') {
-    return state;
+/** 推进本关用时；剩余时间归零时判定超时。 */
+function passTime(state: GameState, deltaMs: number): GameState {
+  const elapsedMs = state.elapsedMs + deltaMs;
+  if (elapsedMs >= TIME_LIMIT_MS) {
+    return { ...state, elapsedMs: TIME_LIMIT_MS, status: 'timeUp' };
   }
 
-  const region = state.level.differences.find(
-    (difference) =>
-      !state.foundIds.includes(difference.id) && isInsideRegion(point, difference),
-  );
-  if (!region) {
-    return state;
-  }
+  return { ...state, elapsedMs };
+}
 
-  const foundIds = [...state.foundIds, region.id];
+function recordHit(state: GameState, regionId: string): GameState {
+  const foundIds = [...state.foundIds, regionId];
   if (foundIds.length < state.level.differences.length) {
     return { ...state, foundIds };
   }
@@ -57,17 +47,68 @@ export function clickPoint(state: GameState, point: Point): GameState {
   };
 }
 
+function recordMiss(state: GameState, point: Point): GameState {
+  const penalized = passTime(state, MISS_PENALTY_MS);
+  const mark = { id: state.missCount, point, shownAtMs: penalized.elapsedMs };
+
+  return {
+    ...penalized,
+    missCount: state.missCount + 1,
+    missMarks: [...state.missMarks, mark],
+  };
+}
+
+/** 显示中的误点叉号只保留 MISS_MARK_DURATION_MS 以内的。 */
+function pruneMissMarks(state: GameState): readonly GameState['missMarks'][number][] {
+  return state.missMarks.filter(
+    (mark) => state.elapsedMs - mark.shownAtMs < MISS_MARK_DURATION_MS,
+  );
+}
+
+export function getRemainingMs(state: GameState): number {
+  return Math.max(0, TIME_LIMIT_MS - state.elapsedMs);
+}
+
+export function startLevel(level: Level): GameState {
+  return {
+    level,
+    status: 'playing',
+    foundIds: [],
+    elapsedMs: 0,
+    clearTimeMs: null,
+    missCount: 0,
+    missMarks: [],
+  };
+}
+
+export function clickPoint(state: GameState, point: Point): GameState {
+  if (state.status !== 'playing') {
+    return state;
+  }
+
+  const containing = state.level.differences.filter((difference) =>
+    isInsideRegion(point, difference),
+  );
+  if (containing.length === 0) {
+    return recordMiss(state, point);
+  }
+
+  const unfound = containing.find((difference) => !state.foundIds.includes(difference.id));
+  if (!unfound) {
+    // 重复点击已找到的差异点：没有任何效果。
+    return state;
+  }
+
+  return recordHit(state, unfound.id);
+}
+
 export function advanceTime(state: GameState, deltaMs: number): GameState {
   if (state.status !== 'playing') {
     return state;
   }
 
-  const elapsedMs = state.elapsedMs + deltaMs;
-  if (elapsedMs >= TIME_LIMIT_MS) {
-    return { ...state, elapsedMs: TIME_LIMIT_MS, status: 'timeUp' };
-  }
-
-  return { ...state, elapsedMs };
+  const next = passTime(state, deltaMs);
+  return { ...next, missMarks: pruneMissMarks(next) };
 }
 
 export function restartLevel(state: GameState): GameState {

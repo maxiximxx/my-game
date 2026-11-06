@@ -24,13 +24,24 @@ export interface Level {
 
 export type GameStatus = 'playing' | 'cleared' | 'timeUp';
 
+/** 误点位置的红色叉号。shownAtMs 是显示时的本关用时，用于判断何时消失。 */
+export interface MissMark {
+  readonly id: number;
+  readonly point: Point;
+  readonly shownAtMs: number;
+}
+
 export interface GameState {
   readonly level: Level;
   readonly status: GameStatus;
   /** 已找到的差异点 id，按找到的先后排列。 */
   readonly foundIds: readonly string[];
-  /** 本关从开始到现在经过的毫秒数，由外部通过 advanceTime 推进。 */
+  /** 本关从开始到现在经过的毫秒数（包括误点扣减的时间），由外部通过 advanceTime 推进。 */
   readonly elapsedMs: number;
   /** 通关时的用时（毫秒）；未通关时为 null。 */
   readonly clearTimeMs: number | null;
+  /** 本关累计误点次数，同时作为 MissMark 的 id 来源。 */
+  readonly missCount: number;
+  /** 仍在显示中的误点叉号。 */
+  readonly missMarks: readonly MissMark[];
 }
