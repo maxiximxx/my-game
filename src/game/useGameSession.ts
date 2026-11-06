@@ -55,7 +55,7 @@ export function useGameSession(level: Level) {
   const pick = (point: Point, minHitRadius: number) =>
     dispatch({ type: 'click', point, minHitRadius });
   const hint = () => dispatch({ type: 'hint' });
-  const retry = () => dispatch({ type: 'restart' });
+  const restart = () => dispatch({ type: 'restart' });
 
-  return { state, pick, hint, retry };
+  return { state, pick, hint, restart };
 }

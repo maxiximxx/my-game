@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createProgress, isLevelUnlocked, recordClear } from './progress';
+import { createProgress, isAllCleared, isLevelUnlocked, recordClear } from './progress';
 
 const LEVEL_COUNT = 5;
 
@@ -33,5 +33,27 @@ describe('线性解锁', () => {
 
     expect(isLevelUnlocked(progress, 5)).toBe(true);
     expect(recordClear(progress, 5, LEVEL_COUNT)).toEqual(progress);
+  });
+});
+
+describe('全部通关', () => {
+  it('通关第 4 关后，还没有全部通关', () => {
+    let progress = createProgress();
+    for (let level = 1; level <= 4; level += 1) {
+      progress = recordClear(progress, level, LEVEL_COUNT);
+    }
+
+    expect(isAllCleared(progress, LEVEL_COUNT)).toBe(false);
+  });
+
+  it('通关全部关卡后为全部通关，之后重玩任意关卡仍保持全部通关', () => {
+    let progress = createProgress();
+    for (let level = 1; level <= LEVEL_COUNT; level += 1) {
+      progress = recordClear(progress, level, LEVEL_COUNT);
+    }
+
+    expect(isAllCleared(progress, LEVEL_COUNT)).toBe(true);
+    expect(isAllCleared(recordClear(progress, 3, LEVEL_COUNT), LEVEL_COUNT)).toBe(true);
+    expect(isLevelUnlocked(progress, 3)).toBe(true);
   });
 });

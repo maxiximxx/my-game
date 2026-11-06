@@ -1,5 +1,5 @@
 import type { Level } from './game/types';
-import { isLevelUnlocked } from './game/progress';
+import { isAllCleared, isLevelUnlocked } from './game/progress';
 import type { Progress } from './game/progress';
 
 interface LevelSelectPageProps {
@@ -12,6 +12,7 @@ export function LevelSelectPage({ levels, progress, onSelectLevel }: LevelSelect
   return (
     <main>
       <h1>选关</h1>
+      {isAllCleared(progress, levels.length) && <p>全部通关</p>}
       <ul className="level-list">
         {levels.map((level) => {
           const unlocked = isLevelUnlocked(progress, level.id);

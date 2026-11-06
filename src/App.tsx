@@ -21,9 +21,14 @@ export function App() {
   }, []);
 
   if (screen.name === 'game') {
+    const currentId = screen.level.id;
+    const nextLevel = levels.find((candidate) => candidate.id === currentId + 1) ?? null;
     return (
       <GamePage
+        key={currentId}
         level={screen.level}
+        nextLevel={nextLevel}
+        onOpenLevel={(level) => setScreen({ name: 'game', level })}
         onBackToLevelSelect={() => setScreen({ name: 'levelSelect' })}
         onLevelCleared={handleLevelCleared}
       />

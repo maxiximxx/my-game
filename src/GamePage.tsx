@@ -9,12 +9,20 @@ import type { Level } from './game/types';
 
 interface GamePageProps {
   level: Level;
+  nextLevel: Level | null;
+  onOpenLevel: (level: Level) => void;
   onBackToLevelSelect: () => void;
   onLevelCleared: (levelId: number) => void;
 }
 
-export function GamePage({ level, onBackToLevelSelect, onLevelCleared }: GamePageProps) {
-  const { state, pick, hint, retry } = useGameSession(level);
+export function GamePage({
+  level,
+  nextLevel,
+  onOpenLevel,
+  onBackToLevelSelect,
+  onLevelCleared,
+}: GamePageProps) {
+  const { state, pick, hint, restart } = useGameSession(level);
   const activeHintId = state.activeHint?.regionId;
   const hintRegion = level.differences.find((difference) => difference.id === activeHintId) ?? null;
 
@@ -46,10 +54,12 @@ export function GamePage({ level, onBackToLevelSelect, onLevelCleared }: GamePag
       {state.clearTimeMs !== null && (
         <ResultModal
           clearTimeMs={state.clearTimeMs}
+          onNextLevel={nextLevel ? () => onOpenLevel(nextLevel) : null}
+          onReplay={restart}
           onBackToLevelSelect={onBackToLevelSelect}
         />
       )}
-      {state.status === 'timeUp' && <TimeUpModal onRetry={retry} />}
+      {state.status === 'timeUp' && <TimeUpModal onRetry={restart} />}
     </main>
   );
 }
