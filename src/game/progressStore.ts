@@ -48,17 +48,17 @@ function parseProgress(raw: string): Progress | null {
 }
 
 /** 浏览器本地存储实现。数据损坏或缺失时读取到初始进度。 */
-export function createLocalProgressStore(storage: StorageLike, key = STORAGE_KEY): ProgressStore {
+export function createLocalProgressStore(storage: StorageLike): ProgressStore {
   return {
     load() {
-      const raw = storage.getItem(key);
+      const raw = storage.getItem(STORAGE_KEY);
       return (raw === null ? null : parseProgress(raw)) ?? createProgress();
     },
     save(progress) {
-      storage.setItem(key, JSON.stringify(progress));
+      storage.setItem(STORAGE_KEY, JSON.stringify(progress));
     },
     clear() {
-      storage.removeItem(key);
+      storage.removeItem(STORAGE_KEY);
     },
   };
 }

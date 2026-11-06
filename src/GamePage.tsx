@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { GameBoard } from './game/GameBoard';
 import { GameHeader } from './game/GameHeader';
 import { ResultModal } from './game/ResultModal';
@@ -22,17 +21,9 @@ export function GamePage({
   onBackToLevelSelect,
   onLevelCleared,
 }: GamePageProps) {
-  const { state, pick, hint, restart } = useGameSession(level);
+  const { state, pick, hint, restart } = useGameSession(level, onLevelCleared);
   const activeHintId = state.activeHint?.regionId;
   const hintRegion = level.differences.find((difference) => difference.id === activeHintId) ?? null;
-
-  // 通关时把结果同步到进度存储（外部状态）。clearTimeMs 从 null 变为数值时只触发一次。
-  const clearTimeMs = state.clearTimeMs;
-  useEffect(() => {
-    if (clearTimeMs !== null) {
-      onLevelCleared(level.id, clearTimeMs);
-    }
-  }, [clearTimeMs, level.id, onLevelCleared]);
 
   return (
     <main>
