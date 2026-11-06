@@ -186,6 +186,29 @@ describe('核心规则：误点与重复点击', () => {
   });
 });
 
+describe('核心规则：判定半径', () => {
+  it('最小判定半径生效时，标注圆之外但在最小半径内的点击也命中（手机端）', () => {
+    // 左侧差异点标注半径 0.1，点击位于其右侧 0.13 处。
+    const hit = clickPoint(startLevel(fixtureLevel), { x: 0.38, y: 0.5 }, 0.15);
+
+    expect(hit.foundIds).toEqual(['left']);
+  });
+
+  it('没有最小判定半径时，标注圆之外的点击为误点（桌面端）', () => {
+    const miss = clickPoint(startLevel(fixtureLevel), { x: 0.38, y: 0.5 });
+
+    expect(miss.foundIds).toEqual([]);
+    expect(miss.missCount).toBe(1);
+  });
+
+  it('标注半径更大时按标注半径判定，最小判定半径不会缩小判定范围', () => {
+    // 标注半径 0.1 大于最小判定半径 0.05，点击位于右侧 0.11 处，超出标注圆。
+    const state = clickPoint(startLevel(fixtureLevel), { x: 0.36, y: 0.5 }, 0.05);
+
+    expect(state.foundIds).toEqual([]);
+  });
+});
+
 describe('核心规则：提示', () => {
   it('每关开始时有 1 次提示', () => {
     expect(startLevel(fixtureLevel).hintsLeft).toBe(1);

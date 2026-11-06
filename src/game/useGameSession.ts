@@ -9,7 +9,7 @@ import {
 import type { GameState, Level, Point } from './types';
 
 type GameAction =
-  | { type: 'click'; point: Point }
+  | { type: 'click'; point: Point; minHitRadius: number }
   | { type: 'tick'; deltaMs: number }
   | { type: 'hint' }
   | { type: 'restart' };
@@ -17,7 +17,7 @@ type GameAction =
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'click':
-      return clickPoint(state, action.point);
+      return clickPoint(state, action.point, action.minHitRadius);
     case 'tick':
       return advanceTime(state, action.deltaMs);
     case 'hint':
@@ -52,7 +52,8 @@ export function useGameSession(level: Level) {
     return () => cancelAnimationFrame(frameId);
   }, [status]);
 
-  const pick = (point: Point) => dispatch({ type: 'click', point });
+  const pick = (point: Point, minHitRadius: number) =>
+    dispatch({ type: 'click', point, minHitRadius });
   const hint = () => dispatch({ type: 'hint' });
   const retry = () => dispatch({ type: 'restart' });
 

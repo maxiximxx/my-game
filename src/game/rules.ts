@@ -23,13 +23,15 @@ const HINT_DURATION_MS = 2_000;
 
 /**
  * 判断点是否落在差异点的圆形区域内（含边界）。
+ * 判定半径取标注半径与 minRadius 中较大者；minRadius 为 0 时只按标注半径判定。
  * 相对坐标在纵向和横向上的物理长度不同，纵向差值需要先除以宽高比，
  * 才能和以图片宽度为单位的半径比较，使圆在屏幕上保持为圆。
  */
-function isInsideRegion(point: Point, region: DifferenceRegion): boolean {
+function isInsideRegion(point: Point, region: DifferenceRegion, minRadius: number): boolean {
+  const radius = Math.max(region.radius, minRadius);
   const dx = point.x - region.center.x;
   const dy = (point.y - region.center.y) / IMAGE_ASPECT_RATIO;
-  return dx * dx + dy * dy <= region.radius * region.radius;
+  return dx * dx + dy * dy <= radius * radius;
 }
 
 /** 推进本关用时；剩余时间归零时判定超时。 */
@@ -98,13 +100,16 @@ export function startLevel(level: Level): GameState {
   };
 }
 
-export function clickPoint(state: GameState, point: Point): GameState {
+/**
+ * 点击。minHitRadius 为最小判定半径（相对图片宽度），手机端由页面传入，桌面端保持 0。
+ */
+export function clickPoint(state: GameState, point: Point, minHitRadius = 0): GameState {
   if (state.status !== 'playing') {
     return state;
   }
 
   const containing = state.level.differences.filter((difference) =>
-    isInsideRegion(point, difference),
+    isInsideRegion(point, difference, minHitRadius),
   );
   if (containing.length === 0) {
     return recordMiss(state, point);

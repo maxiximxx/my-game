@@ -1,12 +1,18 @@
 import type { CSSProperties, MouseEvent } from 'react';
+import { minHitRadiusFor } from './hitArea';
 import type { DifferenceRegion, Level, MissMark, Point } from './types';
+
+/** 与 styles.css 中的 @media 断点保持一致：此宽度以下两张图上下排列，并启用手机端判定。 */
+const MOBILE_LAYOUT_QUERY = '(max-width: 720px)';
+
+type PickHandler = (point: Point, minHitRadius: number) => void;
 
 interface GameBoardProps {
   level: Level;
   foundIds: readonly string[];
   missMarks: readonly MissMark[];
   hintRegion: DifferenceRegion | null;
-  onPick: (point: Point) => void;
+  onPick: PickHandler;
 }
 
 export function GameBoard({ level, foundIds, missMarks, hintRegion, onPick }: GameBoardProps) {
@@ -51,16 +57,20 @@ interface BoardImageProps {
   markedRegions: readonly DifferenceRegion[];
   missMarks: readonly MissMark[];
   hintRegion: DifferenceRegion | null;
-  onPick: (point: Point) => void;
+  onPick: PickHandler;
 }
 
 function BoardImage({ src, alt, markedRegions, missMarks, hintRegion, onPick }: BoardImageProps) {
   const handleClick = (event: MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    onPick({
-      x: (event.clientX - rect.left) / rect.width,
-      y: (event.clientY - rect.top) / rect.height,
-    });
+    const isMobileLayout = window.matchMedia(MOBILE_LAYOUT_QUERY).matches;
+    onPick(
+      {
+        x: (event.clientX - rect.left) / rect.width,
+        y: (event.clientY - rect.top) / rect.height,
+      },
+      isMobileLayout ? minHitRadiusFor(rect.width) : 0,
+    );
   };
 
   return (

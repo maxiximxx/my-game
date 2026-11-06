@@ -86,3 +86,10 @@
 .miss-mark::after {
   transform: rotate(-45deg);
 }
+
+/* 与 GameBoard.tsx 中的 MOBILE_LAYOUT_QUERY 保持一致。 */
+@media (max-width: 720px) {
+  .game-board {
+    flex-direction: column;
+  }
+}
