@@ -12,6 +12,15 @@ const MISS_PENALTY_MS = 5_000;
 /** 误点叉号显示的时长（毫秒）。 */
 const MISS_MARK_DURATION_MS = 600;
 
+/** 每关可用的提示次数。 */
+const HINTS_PER_LEVEL = 1;
+
+/** 使用提示扣减的时间（毫秒）。 */
+const HINT_PENALTY_MS = 10_000;
+
+/** 提示高亮显示的时长（毫秒）。 */
+const HINT_DURATION_MS = 2_000;
+
 /**
  * 判断点是否落在差异点的圆形区域内（含边界）。
  * 相对坐标在纵向和横向上的物理长度不同，纵向差值需要先除以宽高比，
@@ -58,11 +67,17 @@ function recordMiss(state: GameState, point: Point): GameState {
   };
 }
 
-/** 显示中的误点叉号只保留 MISS_MARK_DURATION_MS 以内的。 */
-function pruneMissMarks(state: GameState): readonly GameState['missMarks'][number][] {
-  return state.missMarks.filter(
-    (mark) => state.elapsedMs - mark.shownAtMs < MISS_MARK_DURATION_MS,
-  );
+/** 去掉已经过了显示时长的误点叉号和提示。 */
+function expireMarks(state: GameState): Pick<GameState, 'missMarks' | 'activeHint'> {
+  const ageOf = (shownAtMs: number) => state.elapsedMs - shownAtMs;
+
+  return {
+    missMarks: state.missMarks.filter((mark) => ageOf(mark.shownAtMs) < MISS_MARK_DURATION_MS),
+    activeHint:
+      state.activeHint && ageOf(state.activeHint.shownAtMs) < HINT_DURATION_MS
+        ? state.activeHint
+        : null,
+  };
 }
 
 export function getRemainingMs(state: GameState): number {
@@ -78,6 +93,8 @@ export function startLevel(level: Level): GameState {
     clearTimeMs: null,
     missCount: 0,
     missMarks: [],
+    hintsLeft: HINTS_PER_LEVEL,
+    activeHint: null,
   };
 }
 
@@ -102,13 +119,34 @@ export function clickPoint(state: GameState, point: Point): GameState {
   return recordHit(state, unfound.id);
 }
 
+/** 使用提示：扣减 10 秒，高亮第一处尚未找到的差异点。次数用完后没有效果。 */
+export function requestHint(state: GameState): GameState {
+  if (state.status !== 'playing' || state.hintsLeft === 0) {
+    return state;
+  }
+
+  const target = state.level.differences.find(
+    (difference) => !state.foundIds.includes(difference.id),
+  );
+  if (!target) {
+    return state;
+  }
+
+  const penalized = passTime(state, HINT_PENALTY_MS);
+  return {
+    ...penalized,
+    hintsLeft: state.hintsLeft - 1,
+    activeHint: { regionId: target.id, shownAtMs: penalized.elapsedMs },
+  };
+}
+
 export function advanceTime(state: GameState, deltaMs: number): GameState {
   if (state.status !== 'playing') {
     return state;
   }
 
   const next = passTime(state, deltaMs);
-  return { ...next, missMarks: pruneMissMarks(next) };
+  return { ...next, ...expireMarks(next) };
 }
 
 export function restartLevel(state: GameState): GameState {

@@ -12,7 +12,9 @@ interface GamePageProps {
 }
 
 export function GamePage({ level, onBackToLevelSelect }: GamePageProps) {
-  const { state, pick, retry } = useGameSession(level);
+  const { state, pick, hint, retry } = useGameSession(level);
+  const activeHintId = state.activeHint?.regionId;
+  const hintRegion = level.differences.find((difference) => difference.id === activeHintId) ?? null;
 
   return (
     <main>
@@ -21,12 +23,15 @@ export function GamePage({ level, onBackToLevelSelect }: GamePageProps) {
         foundCount={state.foundIds.length}
         totalCount={level.differences.length}
         remainingSeconds={Math.ceil(getRemainingMs(state) / 1000)}
+        hintsLeft={state.hintsLeft}
+        onHint={hint}
         onBackToLevelSelect={onBackToLevelSelect}
       />
       <GameBoard
         level={level}
         foundIds={state.foundIds}
         missMarks={state.missMarks}
+        hintRegion={hintRegion}
         onPick={pick}
       />
       {state.clearTimeMs !== null && (

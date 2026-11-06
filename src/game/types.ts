@@ -44,4 +44,14 @@ export interface GameState {
   readonly missCount: number;
   /** 仍在显示中的误点叉号。 */
   readonly missMarks: readonly MissMark[];
+  /** 本关剩余的提示次数。 */
+  readonly hintsLeft: number;
+  /** 正在高亮的提示；没有显示中的提示时为 null。 */
+  readonly activeHint: HintMark | null;
+}
+
+/** 提示高亮的差异点。shownAtMs 是显示时的本关用时，用于判断何时消失。 */
+export interface HintMark {
+  readonly regionId: string;
+  readonly shownAtMs: number;
 }

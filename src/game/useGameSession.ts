@@ -1,10 +1,17 @@
 import { useEffect, useReducer } from 'react';
-import { advanceTime, clickPoint, restartLevel, startLevel } from './rules';
+import {
+  advanceTime,
+  clickPoint,
+  requestHint,
+  restartLevel,
+  startLevel,
+} from './rules';
 import type { GameState, Level, Point } from './types';
 
 type GameAction =
   | { type: 'click'; point: Point }
   | { type: 'tick'; deltaMs: number }
+  | { type: 'hint' }
   | { type: 'restart' };
 
 function gameReducer(state: GameState, action: GameAction): GameState {
@@ -13,6 +20,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return clickPoint(state, action.point);
     case 'tick':
       return advanceTime(state, action.deltaMs);
+    case 'hint':
+      return requestHint(state);
     case 'restart':
       return restartLevel(state);
   }
@@ -44,7 +53,8 @@ export function useGameSession(level: Level) {
   }, [status]);
 
   const pick = (point: Point) => dispatch({ type: 'click', point });
+  const hint = () => dispatch({ type: 'hint' });
   const retry = () => dispatch({ type: 'restart' });
 
-  return { state, pick, retry };
+  return { state, pick, hint, retry };
 }

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { advanceTime, clickPoint, getRemainingMs, restartLevel, startLevel } from './rules';
+import {
+  advanceTime,
+  clickPoint,
+  getRemainingMs,
+  requestHint,
+  restartLevel,
+  startLevel,
+} from './rules';
 import type { Level } from './types';
 
 // 测试用的小关卡：只有 2 处差异点，证明规则不写死在某一关的数据上。
@@ -176,5 +183,49 @@ describe('核心规则：误点与重复点击', () => {
 
     expect(twice).toEqual(once);
     expect(getRemainingMs(twice)).toBe(60000);
+  });
+});
+
+describe('核心规则：提示', () => {
+  it('每关开始时有 1 次提示', () => {
+    expect(startLevel(fixtureLevel).hintsLeft).toBe(1);
+  });
+
+  it('使用提示后剩余时间减少 10 秒', () => {
+    const state = requestHint(startLevel(fixtureLevel));
+
+    expect(getRemainingMs(state)).toBe(50000);
+    expect(state.hintsLeft).toBe(0);
+  });
+
+  it('提示高亮一处尚未找到的差异点', () => {
+    let state = clickPoint(startLevel(fixtureLevel), { x: 0.25, y: 0.5 });
+    state = requestHint(state);
+
+    expect(state.activeHint?.regionId).toBe('right');
+  });
+
+  it('提示约 2 秒后消失', () => {
+    let state = requestHint(startLevel(fixtureLevel));
+    state = advanceTime(state, 1999);
+    expect(state.activeHint).not.toBeNull();
+
+    state = advanceTime(state, 1);
+    expect(state.activeHint).toBeNull();
+  });
+
+  it('次数用完后再次使用提示没有任何效果', () => {
+    const once = requestHint(startLevel(fixtureLevel));
+
+    expect(requestHint(once)).toEqual(once);
+  });
+
+  it('超时重新挑战后，提示次数恢复为 1', () => {
+    let state = requestHint(startLevel(fixtureLevel));
+    state = advanceTime(state, 60000);
+    state = requestHint(restartLevel(state));
+
+    expect(getRemainingMs(state)).toBe(50000);
+    expect(state.activeHint).not.toBeNull();
   });
 });

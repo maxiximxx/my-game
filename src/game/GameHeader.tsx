@@ -3,6 +3,8 @@ interface GameHeaderProps {
   foundCount: number;
   totalCount: number;
   remainingSeconds: number;
+  hintsLeft: number;
+  onHint: () => void;
   onBackToLevelSelect: () => void;
 }
 
@@ -11,6 +13,8 @@ export function GameHeader({
   foundCount,
   totalCount,
   remainingSeconds,
+  hintsLeft,
+  onHint,
   onBackToLevelSelect,
 }: GameHeaderProps) {
   return (
@@ -23,6 +27,9 @@ export function GameHeader({
         已找到 {foundCount}/{totalCount}
       </span>
       <span>剩余时间 {remainingSeconds} 秒</span>
+      <button type="button" onClick={onHint} disabled={hintsLeft === 0}>
+        提示（剩余 {hintsLeft} 次）
+      </button>
     </header>
   );
 }
