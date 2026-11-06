@@ -2,6 +2,7 @@ interface GameHeaderProps {
   levelId: number;
   foundCount: number;
   totalCount: number;
+  remainingSeconds: number;
   onBackToLevelSelect: () => void;
 }
 
@@ -9,6 +10,7 @@ export function GameHeader({
   levelId,
   foundCount,
   totalCount,
+  remainingSeconds,
   onBackToLevelSelect,
 }: GameHeaderProps) {
   return (
@@ -20,6 +22,7 @@ export function GameHeader({
       <span>
         已找到 {foundCount}/{totalCount}
       </span>
+      <span>剩余时间 {remainingSeconds} 秒</span>
     </header>
   );
 }

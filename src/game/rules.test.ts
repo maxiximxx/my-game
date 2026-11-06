@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advanceTime, clickPoint, startLevel } from './rules';
+import { advanceTime, clickPoint, getRemainingMs, restartLevel, startLevel } from './rules';
 import type { Level } from './types';
 
 // 测试用的小关卡：只有 2 处差异点，证明规则不写死在某一关的数据上。
@@ -83,5 +83,49 @@ describe('核心规则：通关与用时', () => {
     const state = clickPoint(startLevel(fixtureLevel), { x: 0.25, y: 0.5 });
 
     expect(state.clearTimeMs).toBeNull();
+  });
+});
+
+describe('核心规则：限时与超时', () => {
+  it('开始时剩余时间为 60 秒', () => {
+    expect(getRemainingMs(startLevel(fixtureLevel))).toBe(60000);
+  });
+
+  it('推进时间后剩余时间递减', () => {
+    const state = advanceTime(startLevel(fixtureLevel), 12000);
+
+    expect(getRemainingMs(state)).toBe(48000);
+  });
+
+  it('倒计时归零时本关失败', () => {
+    const state = advanceTime(startLevel(fixtureLevel), 60000);
+
+    expect(state.status).toBe('timeUp');
+    expect(getRemainingMs(state)).toBe(0);
+  });
+
+  it('超时后点击不再生效', () => {
+    const timedOut = advanceTime(startLevel(fixtureLevel), 60000);
+
+    expect(clickPoint(timedOut, { x: 0.25, y: 0.5 })).toEqual(timedOut);
+  });
+
+  it('59 秒内找齐全部差异点时正常通关，不触发超时', () => {
+    let state = advanceTime(startLevel(fixtureLevel), 59000);
+    state = clickPoint(state, { x: 0.25, y: 0.5 });
+    state = clickPoint(state, { x: 0.75, y: 0.5 });
+
+    expect(state.status).toBe('cleared');
+    expect(state.clearTimeMs).toBe(59000);
+  });
+
+  it('超时后重新挑战，计时回到 60 秒，已找到的差异点清零', () => {
+    let state = clickPoint(startLevel(fixtureLevel), { x: 0.25, y: 0.5 });
+    state = advanceTime(state, 60000);
+    state = restartLevel(state);
+
+    expect(state.status).toBe('playing');
+    expect(state.foundIds).toEqual([]);
+    expect(getRemainingMs(state)).toBe(60000);
   });
 });

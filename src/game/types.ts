@@ -22,7 +22,7 @@ export interface Level {
   readonly differences: readonly DifferenceRegion[];
 }
 
-export type GameStatus = 'playing' | 'cleared';
+export type GameStatus = 'playing' | 'cleared' | 'timeUp';
 
 export interface GameState {
   readonly level: Level;

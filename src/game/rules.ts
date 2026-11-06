@@ -14,6 +14,13 @@ function isInsideRegion(point: Point, region: DifferenceRegion): boolean {
   return dx * dx + dy * dy <= region.radius * region.radius;
 }
 
+/** 每关的限时（毫秒）。计时不可暂停。 */
+const TIME_LIMIT_MS = 60_000;
+
+export function getRemainingMs(state: GameState): number {
+  return Math.max(0, TIME_LIMIT_MS - state.elapsedMs);
+}
+
 export function startLevel(level: Level): GameState {
   return {
     level,
@@ -55,5 +62,14 @@ export function advanceTime(state: GameState, deltaMs: number): GameState {
     return state;
   }
 
-  return { ...state, elapsedMs: state.elapsedMs + deltaMs };
+  const elapsedMs = state.elapsedMs + deltaMs;
+  if (elapsedMs >= TIME_LIMIT_MS) {
+    return { ...state, elapsedMs: TIME_LIMIT_MS, status: 'timeUp' };
+  }
+
+  return { ...state, elapsedMs };
+}
+
+export function restartLevel(state: GameState): GameState {
+  return startLevel(state.level);
 }
