@@ -104,6 +104,13 @@ describe('核心规则：限时与超时', () => {
     expect(getRemainingMs(state)).toBe(0);
   });
 
+  it('一次推进的时间超过剩余时间（如切换标签页后）时同样超时，剩余时间为 0', () => {
+    const state = advanceTime(startLevel(fixtureLevel), 75000);
+
+    expect(state.status).toBe('timeUp');
+    expect(getRemainingMs(state)).toBe(0);
+  });
+
   it('超时后点击不再生效', () => {
     const timedOut = advanceTime(startLevel(fixtureLevel), 60000);
 
