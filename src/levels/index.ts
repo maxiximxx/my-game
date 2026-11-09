@@ -1,14 +1,9 @@
 import type { Level } from '../game/types';
 import { level01 } from './level-01';
+import { level02 } from './level-02';
+import { level03 } from './level-03';
+import { level04 } from './level-04';
+import { level05 } from './level-05';
 
-/**
- * 所有关卡，按关卡编号排列。新增关卡时在这里追加即可。
- * 第 2 至 5 关暂时复用第 1 关的示例素材，只用于验证选关与解锁流程；正式素材由第 11 项替换。
- */
-export const levels: readonly Level[] = [
-  level01,
-  { ...level01, id: 2 },
-  { ...level01, id: 3 },
-  { ...level01, id: 4 },
-  { ...level01, id: 5 },
-];
+/** 所有关卡，按关卡编号排列。新增关卡时新建 level-0N.ts 并在这里追加。 */
+export const levels: readonly Level[] = [level01, level02, level03, level04, level05];
