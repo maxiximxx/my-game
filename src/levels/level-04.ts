@@ -3,8 +3,8 @@ import type { Level } from '../game/types';
 // 第 4 关：教室。圆形区域由像素配置换算得到，图片尺寸 1600×1200。
 export const level04: Level = {
   id: 4,
-  originalImage: '/levels/level-04-original.png',
-  modifiedImage: '/levels/level-04-modified.png',
+  originalImage: `${import.meta.env.BASE_URL}levels/level-04-original.png`,
+  modifiedImage: `${import.meta.env.BASE_URL}levels/level-04-modified.png`,
   differences: [
     { id: 'clock', center: { x: 0.2, y: 0.2375 }, radius: 0.0563 }, // 左上方挂钟的白色表盘变成了蓝色
     { id: 'backpack', center: { x: 0.8641, y: 0.2583 }, radius: 0.1 }, // 教室右上方挂着的粉橙色书包消失了

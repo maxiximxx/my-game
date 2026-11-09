@@ -6,7 +6,7 @@
 
 **Status:** ready-for-agent
 
-- [ ] 构建命令生成静态文件
-- [ ] 本地预览可以完整玩完 5 关
-- [ ] 桌面主流浏览器，以及 iOS Safari 和 Android Chrome，手工验收通过
-- [ ] 部署配置已准备好，实际部署由你完成
+- [x] 构建命令生成静态文件（npm run build 已验证；子路径构建 VITE_BASE_PATH=/my-game/ 也已验证资源路径正确）
+- [ ] 本地预览可以完整玩完 5 关（待你用 npm run preview 确认）
+- [ ] 桌面主流浏览器，以及 iOS Safari 和 Android Chrome，手工验收通过（待你执行）
+- [x] 部署配置已准备好：GitHub Pages 工作流 `.github/workflows/deploy.yml`，以及 `vite.config.ts` 的 base 设置。仓库目前没有 GitHub 远程，工作流需要推送后才会运行；实际部署由你完成

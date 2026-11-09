@@ -3,8 +3,8 @@ import type { Level } from '../game/types';
 // 第 2 关：早餐厨房。圆形区域由像素配置换算得到，图片尺寸 1600×1200。
 export const level02: Level = {
   id: 2,
-  originalImage: '/levels/level-02-original.png',
-  modifiedImage: '/levels/level-02-modified.png',
+  originalImage: `${import.meta.env.BASE_URL}levels/level-02-original.png`,
+  modifiedImage: `${import.meta.env.BASE_URL}levels/level-02-modified.png`,
   differences: [
     { id: 'curtain', center: { x: 0.2297, y: 0.3054 }, radius: 0.1406 }, // 窗户左侧窗帘由蓝色变成了黄色
     { id: 'bread', center: { x: 0.7853, y: 0.4829 }, radius: 0.1063 }, // 餐盘上的两块面包消失了

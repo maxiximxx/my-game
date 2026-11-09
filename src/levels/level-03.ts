@@ -3,8 +3,8 @@ import type { Level } from '../game/types';
 // 第 3 关：海边傍晚。圆形区域由像素配置换算得到，图片尺寸 1600×1200。
 export const level03: Level = {
   id: 3,
-  originalImage: '/levels/level-03-original.png',
-  modifiedImage: '/levels/level-03-modified.png',
+  originalImage: `${import.meta.env.BASE_URL}levels/level-03-original.png`,
+  modifiedImage: `${import.meta.env.BASE_URL}levels/level-03-modified.png`,
   differences: [
     { id: 'umbrella', center: { x: 0.2072, y: 0.3517 }, radius: 0.1594 }, // 沙滩遮阳伞由红白配色变成了蓝白配色
     { id: 'sailboat', center: { x: 0.7938, y: 0.3079 }, radius: 0.0969 }, // 海面右上方的帆船消失了

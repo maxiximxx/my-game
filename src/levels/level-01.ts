@@ -3,8 +3,8 @@ import type { Level } from '../game/types';
 // 第 1 关：公园。圆形区域由像素配置换算得到，图片尺寸 1600×1200。
 export const level01: Level = {
   id: 1,
-  originalImage: '/levels/level-01-original.png',
-  modifiedImage: '/levels/level-01-modified.png',
+  originalImage: `${import.meta.env.BASE_URL}levels/level-01-original.png`,
+  modifiedImage: `${import.meta.env.BASE_URL}levels/level-01-modified.png`,
   differences: [
     { id: 'tree', center: { x: 0.2328, y: 0.2625 }, radius: 0.1969 }, // 公园大树的树冠由绿色变成了橙色
     { id: 'balloon', center: { x: 0.8, y: 0.2333 }, radius: 0.1406 }, // 天空中的红色、蓝色和黄色气球全部消失
