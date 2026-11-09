@@ -25,6 +25,7 @@ export function GameBoard({ level, foundIds, missMarks, hintRegion, onPick }: Ga
       <BoardImage
         src={level.originalImage}
         alt="原图"
+        label="原图"
         markedRegions={foundRegions}
         missMarks={missMarks}
         hintRegion={null}
@@ -33,6 +34,7 @@ export function GameBoard({ level, foundIds, missMarks, hintRegion, onPick }: Ga
       <BoardImage
         src={level.modifiedImage}
         alt="改图"
+        label="改图"
         markedRegions={foundRegions}
         missMarks={missMarks}
         hintRegion={hintRegion}
@@ -54,13 +56,22 @@ function regionStyle(region: DifferenceRegion): CSSProperties {
 interface BoardImageProps {
   src: string;
   alt: string;
+  label: string;
   markedRegions: readonly DifferenceRegion[];
   missMarks: readonly MissMark[];
   hintRegion: DifferenceRegion | null;
   onPick: PickHandler;
 }
 
-function BoardImage({ src, alt, markedRegions, missMarks, hintRegion, onPick }: BoardImageProps) {
+function BoardImage({
+  src,
+  alt,
+  label,
+  markedRegions,
+  missMarks,
+  hintRegion,
+  onPick,
+}: BoardImageProps) {
   const handleClick = (event: MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const isMobileLayout = window.matchMedia(MOBILE_LAYOUT_QUERY).matches;
@@ -76,6 +87,9 @@ function BoardImage({ src, alt, markedRegions, missMarks, hintRegion, onPick }: 
   return (
     <div className="board-image" onClick={handleClick}>
       <img src={src} alt={alt} draggable={false} />
+      <span className="board-tag" aria-hidden="true">
+        {label}
+      </span>
       {markedRegions.map((region) => (
         <span key={region.id} className="region-ring marker" style={regionStyle(region)} />
       ))}

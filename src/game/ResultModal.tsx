@@ -16,20 +16,24 @@ export function ResultModal({
   onBackToLevelSelect,
 }: ResultModalProps) {
   return (
-    <Modal title="通关">
-      <p>通关用时 {formatSeconds(clearTimeMs)} 秒</p>
-      <button type="button" onClick={onReplay}>
-        重玩
-      </button>
-      {onNextLevel ? (
-        <button type="button" onClick={onNextLevel}>
-          下一关
+    <Modal title="通关" tone="success">
+      <p className="modal-stat">
+        通关用时 <strong>{formatSeconds(clearTimeMs)}</strong> 秒
+      </p>
+      <div className="modal-actions">
+        <button type="button" className="btn" onClick={onReplay}>
+          重玩
         </button>
-      ) : (
-        <button type="button" onClick={onBackToLevelSelect}>
-          返回选关
-        </button>
-      )}
+        {onNextLevel ? (
+          <button type="button" className="btn btn-primary" onClick={onNextLevel}>
+            下一关
+          </button>
+        ) : (
+          <button type="button" className="btn btn-primary" onClick={onBackToLevelSelect}>
+            返回选关
+          </button>
+        )}
+      </div>
     </Modal>
   );
 }
