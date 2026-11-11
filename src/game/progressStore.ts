@@ -26,25 +26,20 @@ function parseProgress(raw: string): Progress | null {
     return null;
   }
 
-  const record = data as { clearedCount?: unknown; bestTimesMs?: unknown };
-  if (
-    typeof record.clearedCount !== 'number' ||
-    !Number.isInteger(record.clearedCount) ||
-    record.clearedCount < 0
-  ) {
+  // 旧版本保存的数据还带有 clearedCount 字段，这里忽略它：通关数量由最佳用时推导。
+  const record = data as { bestTimesMs?: unknown };
+  if (typeof record.bestTimesMs !== 'object' || record.bestTimesMs === null) {
     return null;
   }
 
   const bestTimesMs: Record<number, number> = {};
-  if (typeof record.bestTimesMs === 'object' && record.bestTimesMs !== null) {
-    for (const [levelId, ms] of Object.entries(record.bestTimesMs)) {
-      if (typeof ms === 'number' && Number.isFinite(ms)) {
-        bestTimesMs[Number(levelId)] = ms;
-      }
+  for (const [levelId, ms] of Object.entries(record.bestTimesMs)) {
+    if (typeof ms === 'number' && Number.isFinite(ms)) {
+      bestTimesMs[Number(levelId)] = ms;
     }
   }
 
-  return { clearedCount: record.clearedCount, bestTimesMs };
+  return { bestTimesMs };
 }
 
 /** 浏览器本地存储实现。数据损坏或缺失时读取到初始进度。 */

@@ -2,13 +2,22 @@ import { describe, expect, it } from 'vitest';
 import {
   createProgress,
   getBestTimeMs,
+  getClearedCount,
   isAllCleared,
   isLevelUnlocked,
-  recordBestTime,
-  recordClear,
+  recordLevelCleared,
 } from './progress';
 
 const LEVEL_COUNT = 5;
+
+/** 依次通关第 1 到第 count 关，每关用时 42 秒。 */
+function clearLevels(count: number) {
+  let progress = createProgress();
+  for (let level = 1; level <= count; level += 1) {
+    progress = recordLevelCleared(progress, level, 42000);
+  }
+  return progress;
+}
 
 describe('线性解锁', () => {
   it('开始时只有第 1 关开放', () => {
@@ -20,47 +29,40 @@ describe('线性解锁', () => {
   });
 
   it('通关第 1 关后第 2 关解锁，第 3 关仍然锁定', () => {
-    const progress = recordClear(createProgress(), 1, LEVEL_COUNT);
+    const progress = recordLevelCleared(createProgress(), 1, 42000);
 
     expect(isLevelUnlocked(progress, 2)).toBe(true);
     expect(isLevelUnlocked(progress, 3)).toBe(false);
   });
 
-  it('已解锁的关卡重复通关时，解锁状态不变', () => {
-    const progress = recordClear(createProgress(), 1, LEVEL_COUNT);
+  it('锁定的关卡不能记录通关', () => {
+    const progress = createProgress();
 
-    expect(recordClear(progress, 1, LEVEL_COUNT)).toEqual(progress);
+    expect(recordLevelCleared(progress, 2, 30000)).toEqual(progress);
   });
 
-  it('通关最后一关后，解锁数量不超过关卡总数', () => {
-    let progress = createProgress();
-    for (let level = 1; level <= LEVEL_COUNT; level += 1) {
-      progress = recordClear(progress, level, LEVEL_COUNT);
-    }
+  it('已解锁的关卡重复通关时，解锁状态不变', () => {
+    const progress = recordLevelCleared(createProgress(), 1, 42000);
 
-    expect(isLevelUnlocked(progress, 5)).toBe(true);
-    expect(recordClear(progress, 5, LEVEL_COUNT)).toEqual(progress);
+    expect(getClearedCount(recordLevelCleared(progress, 1, 30000))).toBe(1);
+    expect(isLevelUnlocked(recordLevelCleared(progress, 1, 30000), 3)).toBe(false);
+  });
+
+  it('通关全部关卡后，已通关数量等于关卡总数', () => {
+    expect(getClearedCount(clearLevels(LEVEL_COUNT))).toBe(LEVEL_COUNT);
   });
 });
 
 describe('全部通关', () => {
   it('通关第 4 关后，还没有全部通关', () => {
-    let progress = createProgress();
-    for (let level = 1; level <= 4; level += 1) {
-      progress = recordClear(progress, level, LEVEL_COUNT);
-    }
-
-    expect(isAllCleared(progress, LEVEL_COUNT)).toBe(false);
+    expect(isAllCleared(clearLevels(4), LEVEL_COUNT)).toBe(false);
   });
 
   it('通关全部关卡后为全部通关，之后重玩任意关卡仍保持全部通关', () => {
-    let progress = createProgress();
-    for (let level = 1; level <= LEVEL_COUNT; level += 1) {
-      progress = recordClear(progress, level, LEVEL_COUNT);
-    }
+    const progress = clearLevels(LEVEL_COUNT);
 
     expect(isAllCleared(progress, LEVEL_COUNT)).toBe(true);
-    expect(isAllCleared(recordClear(progress, 3, LEVEL_COUNT), LEVEL_COUNT)).toBe(true);
+    expect(isAllCleared(recordLevelCleared(progress, 3, 30000), LEVEL_COUNT)).toBe(true);
     expect(isLevelUnlocked(progress, 3)).toBe(true);
   });
 });
@@ -71,27 +73,27 @@ describe('最佳用时', () => {
   });
 
   it('首次通关后，最佳用时等于本次通关用时', () => {
-    const progress = recordBestTime(createProgress(), 1, 42000);
+    const progress = recordLevelCleared(createProgress(), 1, 42000);
 
     expect(getBestTimeMs(progress, 1)).toBe(42000);
   });
 
   it('再次通关用时更短时，最佳用时更新', () => {
-    let progress = recordBestTime(createProgress(), 1, 42000);
-    progress = recordBestTime(progress, 1, 30000);
+    let progress = recordLevelCleared(createProgress(), 1, 42000);
+    progress = recordLevelCleared(progress, 1, 30000);
 
     expect(getBestTimeMs(progress, 1)).toBe(30000);
   });
 
   it('再次通关用时更长时，保留原来的最佳用时', () => {
-    let progress = recordBestTime(createProgress(), 1, 42000);
-    progress = recordBestTime(progress, 1, 50000);
+    let progress = recordLevelCleared(createProgress(), 1, 42000);
+    progress = recordLevelCleared(progress, 1, 50000);
 
     expect(getBestTimeMs(progress, 1)).toBe(42000);
   });
 
   it('各关的最佳用时互不影响', () => {
-    const progress = recordBestTime(createProgress(), 1, 42000);
+    const progress = recordLevelCleared(createProgress(), 1, 42000);
 
     expect(getBestTimeMs(progress, 2)).toBeNull();
   });

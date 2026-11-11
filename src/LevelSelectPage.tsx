@@ -1,6 +1,6 @@
 import type { Level } from './game/types';
 import { formatSeconds } from './game/format';
-import { getBestTimeMs, isAllCleared, isLevelUnlocked } from './game/progress';
+import { getBestTimeMs, getClearedCount, isAllCleared, isLevelUnlocked } from './game/progress';
 import type { Progress } from './game/progress';
 
 interface LevelSelectPageProps {
@@ -23,7 +23,7 @@ export function LevelSelectPage({
       <header className="page-head">
         <h1>选关</h1>
         <p className={allCleared ? 'status-pill is-complete' : 'status-pill'}>
-          {allCleared ? '全部通关' : `已通关 ${progress.clearedCount}/${levels.length}`}
+          {allCleared ? '全部通关' : `已通关 ${getClearedCount(progress)}/${levels.length}`}
         </p>
       </header>
 

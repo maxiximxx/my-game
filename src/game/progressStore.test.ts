@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createProgress, getBestTimeMs, isLevelUnlocked, recordBestTime, recordClear } from './progress';
+import { createProgress, getBestTimeMs, isLevelUnlocked, recordLevelCleared } from './progress';
 import { createLocalProgressStore, createMemoryProgressStore } from './progressStore';
 import type { StorageLike } from './progressStore';
 
@@ -16,11 +16,7 @@ function createFakeStorage(): StorageLike {
   };
 }
 
-const clearedOnceWithBestTime = recordBestTime(
-  recordClear(createProgress(), 1, 5),
-  1,
-  42000,
-);
+const clearedOnceWithBestTime = recordLevelCleared(createProgress(), 1, 42000);
 
 describe('进度存储：内存实现', () => {
   it('没有保存过时读取到初始进度', () => {
@@ -53,6 +49,16 @@ describe('进度存储：浏览器本地存储', () => {
     const reloaded = createLocalProgressStore(storage).load();
 
     expect(reloaded).toEqual(clearedOnceWithBestTime);
+  });
+
+  it('旧版本保存的数据（带 clearedCount 字段）仍然能读出最佳用时和解锁状态', () => {
+    const storage = createFakeStorage();
+    storage.setItem('zhao-cha-progress', '{"clearedCount":1,"bestTimesMs":{"1":42000}}');
+
+    const progress = createLocalProgressStore(storage).load();
+
+    expect(getBestTimeMs(progress, 1)).toBe(42000);
+    expect(isLevelUnlocked(progress, 2)).toBe(true);
   });
 
   it('本地数据损坏时回到初始进度', () => {
