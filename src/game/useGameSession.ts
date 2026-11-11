@@ -1,17 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
-import { advanceTime, clickPoint, requestHint, restartLevel, startLevel } from './rules';
-import type { GameState, Level, Point } from './types';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { createGameSession } from './gameSession';
+import type { Level } from './types';
 
 type OnLevelCleared = (levelId: number, clearTimeMs: number) => void;
 
 /**
- * 管理一局游戏的状态。
- * 权威副本保存在 ref 中：点击、提示、计时都先基于 ref 算出下一个状态，再写回 React state。
- * 这样通关可以在点击事件中直接通知外部，不需要 effect 去监听状态变化。
+ * 把游戏会话接入 React。会话在组件挂载时创建一次；换关时 GamePage 由 key 重新挂载，会得到新会话。
+ * 这里只做适配：订阅会话的状态，并在游戏进行中每帧把当前时间交给会话计时。
  */
 export function useGameSession(level: Level, onLevelCleared: OnLevelCleared) {
-  const [state, setState] = useState<GameState>(() => startLevel(level));
-  const latest = useRef(state);
+  const [session] = useState(() => createGameSession(level, { onLevelCleared }));
+  const state = useSyncExternalStore(session.subscribe, session.getState);
   const status = state.status;
 
   useEffect(() => {
@@ -20,36 +19,14 @@ export function useGameSession(level: Level, onLevelCleared: OnLevelCleared) {
     }
 
     let frameId = 0;
-    let previousTime = performance.now();
     const step = () => {
-      const now = performance.now();
-      const next = advanceTime(latest.current, now - previousTime);
-      latest.current = next;
-      setState(next);
-      previousTime = now;
+      session.tick(performance.now());
       frameId = requestAnimationFrame(step);
     };
     frameId = requestAnimationFrame(step);
 
     return () => cancelAnimationFrame(frameId);
-  }, [status]);
+  }, [session, status]);
 
-  const commit = (next: GameState) => {
-    latest.current = next;
-    setState(next);
-  };
-
-  const pick = (point: Point, minHitRadius: number) => {
-    const before = latest.current;
-    const next = clickPoint(before, point, minHitRadius);
-    commit(next);
-    if (before.clearTimeMs === null && next.clearTimeMs !== null) {
-      onLevelCleared(level.id, next.clearTimeMs);
-    }
-  };
-
-  const hint = () => commit(requestHint(latest.current));
-  const restart = () => commit(restartLevel(latest.current));
-
-  return { state, pick, hint, restart };
+  return { state, pick: session.pick, hint: session.hint, restart: session.restart };
 }
