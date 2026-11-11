@@ -1,6 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { createGameSession } from './gameSession';
-import type { Level } from './types';
+import { createGameSession } from '../domain/gameSession';
+import type { Level } from '../domain/types';
 
 type OnLevelCleared = (levelId: number, clearTimeMs: number) => void;
 

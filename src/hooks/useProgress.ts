@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { createProgress, recordLevelCleared } from './progress';
-import type { Progress } from './progress';
-import type { ProgressStore } from './progressStore';
+import { createProgress, recordLevelCleared } from '../domain/progress';
+import type { Progress } from '../domain/progress';
+import type { ProgressStore } from '../storage/progressStore';
 
 /**
  * 关卡进度的页面层入口：加载进度、把变化同步到存储（外部系统）、记录通关、重置进度。

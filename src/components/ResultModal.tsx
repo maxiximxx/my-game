@@ -1,4 +1,4 @@
-import { formatSeconds } from './format';
+import { formatSeconds } from '../domain/format';
 import { Modal } from './Modal';
 
 interface ResultModalProps {

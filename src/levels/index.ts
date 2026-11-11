@@ -1,4 +1,4 @@
-import type { Level } from '../game/types';
+import type { Level } from '../domain/types';
 import { level01 } from './level-01';
 import { level02 } from './level-02';
 import { level03 } from './level-03';

@@ -1,4 +1,4 @@
-import type { Level } from '../game/types';
+import type { Level } from '../domain/types';
 
 // 第 2 关：早餐厨房。圆形区域由像素配置换算得到，图片尺寸 1600×1200。
 export const level02: Level = {

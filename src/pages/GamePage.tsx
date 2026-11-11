@@ -1,10 +1,10 @@
-import { GameBoard } from './game/GameBoard';
-import { GameHeader } from './game/GameHeader';
-import { ResultModal } from './game/ResultModal';
-import { TimeUpModal } from './game/TimeUpModal';
-import { getRemainingMs } from './game/rules';
-import { useGameSession } from './game/useGameSession';
-import type { Level } from './game/types';
+import { GameBoard } from '../components/GameBoard';
+import { GameHeader } from '../components/GameHeader';
+import { ResultModal } from '../components/ResultModal';
+import { TimeUpModal } from '../components/TimeUpModal';
+import { getRemainingMs } from '../domain/rules';
+import { useGameSession } from '../hooks/useGameSession';
+import type { Level } from '../domain/types';
 
 interface GamePageProps {
   level: Level;

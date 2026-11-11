@@ -43,22 +43,39 @@ npm run preview  # 预览构建结果
 
 ```
 src/
-  App.tsx              页面切换与进度
-  HomePage.tsx         首页
-  LevelSelectPage.tsx  选关页
-  GamePage.tsx         游戏页
-  game/
-    rules.ts           核心规则：计时、命中、误点、提示（纯函数，不依赖页面）
-    progress.ts        线性解锁、最佳用时
-    progressStore.ts   进度的读取、保存和清除（浏览器本地存储）
-    hitArea.ts         手机端最小判定范围的换算
-    useGameSession.ts  游戏状态与计时循环
-    GameBoard.tsx      原图与改图、圆圈标记
-  levels/              关卡数据（差异点的圆形区域）
-public/levels/         关卡图片（原图与改图，4:3）
-docs/                  领域术语、ADR 与代理技能配置
-.scratch/zhao-cha/     规格说明与任务拆分
+  main.tsx               入口：挂载应用，注入浏览器本地存储
+  App.tsx                屏幕切换，组合页面和进度
+  styles.css             全部样式
+  domain/                纯规则，不依赖 React 或浏览器
+    types.ts             领域类型：关卡、差异点、游戏状态
+    rules.ts             计时、命中、误点、提示
+    gameSession.ts       一局游戏：状态、计时、通关通知
+    progress.ts          线性解锁、最佳用时
+    hitArea.ts           点击定位，手机端最小判定范围
+    layout.ts            图片比例与断点（与 styles.css 有一致性测试）
+    format.ts            时间显示格式
+  storage/
+    progressStore.ts     进度的读取、保存和清除（浏览器本地存储）
+  hooks/                 把领域模块接入 React
+    useGameSession.ts    一局游戏的状态订阅与计时循环
+    useProgress.ts       进度的加载、保存、记录通关和重置
+  components/            可复用的界面组件
+    GameBoard.tsx        原图与改图、圆圈标记
+    GameHeader.tsx       顶栏：计时、进度、提示
+    Modal.tsx            弹窗外壳
+    ResultModal.tsx      通关结算
+    TimeUpModal.tsx      超时提示
+  pages/                 每个屏幕一个页面
+    HomePage.tsx         首页
+    LevelSelectPage.tsx  选关页
+    GamePage.tsx         游戏页
+  levels/                关卡数据：每关的图片和差异点
+public/levels/           关卡图片（原图与改图，4:3）
+docs/                    领域术语、ADR 与代理技能配置
+.scratch/zhao-cha/       规格说明与任务拆分
 ```
+
+依赖方向：`pages` 依赖 `components`、`hooks` 和 `domain`；`hooks` 依赖 `domain` 和 `storage`；`components` 只依赖 `domain`；`domain` 不依赖任何其他目录。
 
 ## 新增关卡
 

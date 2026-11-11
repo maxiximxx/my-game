@@ -1,7 +1,7 @@
 import type { CSSProperties, MouseEvent } from 'react';
-import { locateClick } from './hitArea';
-import { MOBILE_LAYOUT_QUERY } from './layout';
-import type { DifferenceRegion, Level, MissMark, Point } from './types';
+import { locateClick } from '../domain/hitArea';
+import { MOBILE_LAYOUT_QUERY } from '../domain/layout';
+import type { DifferenceRegion, Level, MissMark, Point } from '../domain/types';
 
 type PickHandler = (point: Point, minHitRadius: number) => void;
 

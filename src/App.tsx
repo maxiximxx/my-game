@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { GamePage } from './GamePage';
-import { HomePage } from './HomePage';
-import { LevelSelectPage } from './LevelSelectPage';
-import type { ProgressStore } from './game/progressStore';
-import { useProgress } from './game/useProgress';
-import type { Level } from './game/types';
+import { GamePage } from './pages/GamePage';
+import { HomePage } from './pages/HomePage';
+import { LevelSelectPage } from './pages/LevelSelectPage';
+import type { ProgressStore } from './storage/progressStore';
+import { useProgress } from './hooks/useProgress';
+import type { Level } from './domain/types';
 import { levels } from './levels';
 
 type Screen =

@@ -1,4 +1,4 @@
-import type { Level } from '../game/types';
+import type { Level } from '../domain/types';
 
 // 第 1 关：公园。圆形区域由像素配置换算得到，图片尺寸 1600×1200。
 export const level01: Level = {

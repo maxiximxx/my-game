@@ -1,4 +1,4 @@
-import { levels } from './levels';
+import { levels } from '../levels';
 
 interface HomePageProps {
   onStart: () => void;

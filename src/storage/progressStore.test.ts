@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createProgress, getBestTimeMs, isLevelUnlocked, recordLevelCleared } from './progress';
+import { createProgress, getBestTimeMs, isLevelUnlocked, recordLevelCleared } from '../domain/progress';
 import { createLocalProgressStore, createMemoryProgressStore } from './progressStore';
 import type { StorageLike } from './progressStore';
 

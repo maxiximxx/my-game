@@ -1,4 +1,4 @@
-import type { Level } from '../game/types';
+import type { Level } from '../domain/types';
 
 // 第 3 关：海边傍晚。圆形区域由像素配置换算得到，图片尺寸 1600×1200。
 export const level03: Level = {

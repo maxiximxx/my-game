@@ -1,5 +1,5 @@
-import { createProgress } from './progress';
-import type { Progress } from './progress';
+import { createProgress } from '../domain/progress';
+import type { Progress } from '../domain/progress';
 
 /** 进度存储：读取、保存和清除关卡进度。只保存解锁状态和最佳用时，不保存本关进行中的状态。 */
 export interface ProgressStore {

@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
-import { createLocalProgressStore } from './game/progressStore';
+import { createLocalProgressStore } from './storage/progressStore';
 import './styles.css';
 
 const rootElement = document.getElementById('root');

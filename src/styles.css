@@ -7,7 +7,7 @@
   --lamp: #ffd45c;
   --leaf: #2fb874;
   --tomato: #ff5b4d;
-  /* 关卡图片的宽高比。与 src/game/layout.ts 中的 IMAGE_ASPECT_RATIO 保持一致（有测试检查）。 */
+  /* 关卡图片的宽高比。与 src/domain/layout.ts 中的 IMAGE_ASPECT_RATIO 保持一致（有测试检查）。 */
   --image-ratio: 4 / 3;
 
   --outline: 3px solid var(--ink);

@@ -1,7 +1,7 @@
-import type { Level } from './game/types';
-import { formatSeconds } from './game/format';
-import { getBestTimeMs, getClearedCount, isAllCleared, isLevelUnlocked } from './game/progress';
-import type { Progress } from './game/progress';
+import type { Level } from '../domain/types';
+import { formatSeconds } from '../domain/format';
+import { getBestTimeMs, getClearedCount, isAllCleared, isLevelUnlocked } from '../domain/progress';
+import type { Progress } from '../domain/progress';
 
 interface LevelSelectPageProps {
   levels: readonly Level[];
