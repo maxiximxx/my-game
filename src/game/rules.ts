@@ -1,7 +1,5 @@
+import { IMAGE_ASPECT_RATIO } from './layout';
 import type { DifferenceRegion, GameState, Level, Point } from './types';
-
-/** 关卡图片的宽高比（宽 : 高）。所有关卡图片统一为 4:3。 */
-const IMAGE_ASPECT_RATIO = 4 / 3;
 
 /** 每关的限时（毫秒）。计时不可暂停。 */
 const TIME_LIMIT_MS = 60_000;

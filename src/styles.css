@@ -7,6 +7,8 @@
   --lamp: #ffd45c;
   --leaf: #2fb874;
   --tomato: #ff5b4d;
+  /* 关卡图片的宽高比。与 src/game/layout.ts 中的 IMAGE_ASPECT_RATIO 保持一致（有测试检查）。 */
+  --image-ratio: 4 / 3;
 
   --outline: 3px solid var(--ink);
   --shadow: 0 5px 0 var(--ink);
@@ -168,7 +170,7 @@ button:disabled {
 
 .home-frame {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: var(--image-ratio);
   overflow: hidden;
   border: var(--outline);
   border-radius: 16px;
@@ -253,7 +255,7 @@ button:disabled {
 
 .tile-frame {
   display: block;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: var(--image-ratio);
   overflow: hidden;
   border: 2px solid var(--ink);
   border-radius: 12px;
@@ -404,7 +406,7 @@ button:disabled {
 
 .board-image {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: var(--image-ratio);
   overflow: hidden;
   border: var(--outline);
   border-radius: 18px;
